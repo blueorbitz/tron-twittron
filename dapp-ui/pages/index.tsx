@@ -4,6 +4,7 @@ import { Button, Form } from 'react-bootstrap';
 import AppHeader from '../components/AppHeader';
 import AppNavbar from '../components/AppNavbar';
 import ColCenter from '../components/ColCenter';
+import { transferFund } from '../helpers/utils';
 
 const Home: NextPage = () => {
   const onSubmit = async (e: React.SyntheticEvent) => {
@@ -13,10 +14,11 @@ const Home: NextPage = () => {
       amount: { value: number };
       message: { value: boolean };
     };
-    const handle = target.handle.value; // typechecks!
-    const amount = target.amount.value; // typechecks!
-    const message = target.message.value; // typechecks!
-    console.log(handle, amount, message);
+    const handle = target.handle.value;
+    const amount = target.amount.value;
+    // const message = target.message.value;
+
+    await transferFund(handle, amount);
   };
 
   return (

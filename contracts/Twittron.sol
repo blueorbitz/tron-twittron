@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity >=0.7.0 <0.9.0;
+pragma solidity ^0.8.0;
 
 contract Twittron {
   struct TransferReceipt {
@@ -87,10 +87,5 @@ contract Twittron {
 
   function nextCounterId() public returns (uint) {
     return counterId++;
-  }
-
-  // recover the funds of the contract
-  function kill() public _ownerOnly {
-    selfdestruct(payable(msg.sender));
   }
 }

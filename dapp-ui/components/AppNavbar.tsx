@@ -38,7 +38,7 @@ export default function AppHeader() {
                   TronLink is <strong>{isTronWebConnected() ? "connected" : "not connected"}</strong>.
                 </Tooltip>
               }>
-                <div className={`text-${isTronWebConnected() ? "success" : "danger"}`}>TronLink</div>
+                <div className={isTronWebConnected() ? "text-success" : "text-danger"}>TronLink</div>
               </OverlayTrigger>
             </Nav.Link>
           </Nav>
