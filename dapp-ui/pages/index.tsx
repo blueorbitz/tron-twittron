@@ -3,6 +3,7 @@ import React from 'react';
 import { Button, Form } from 'react-bootstrap';
 import AppHeader from '../components/AppHeader';
 import AppNavbar from '../components/AppNavbar';
+import ColCenter from '../components/ColCenter';
 
 const Home: NextPage = () => {
   const onSubmit = async (e: React.SyntheticEvent) => {
@@ -23,15 +24,12 @@ const Home: NextPage = () => {
       <AppHeader />
       <AppNavbar />
       <div className="row py-3">
-        <div className="col-2" />
-        <div className="col-8">
+        <ColCenter>
           <h4>Transfer Trx token to a Twitter handle.</h4>
           <p>Your token transfer is safe with us. Token transfer will be stored in the smart-contract vault if the user has not registered their wallet with us.</p>
-        </div>
-        <div className="col-2" />
+        </ColCenter>
 
-        <div className="col-2" />
-        <div className="col-8">
+        <ColCenter>
           <Form onSubmit={onSubmit}>
             <Form.Group className="mb-3" controlId="handle">
               <Form.Label>Twitter @handle</Form.Label>
@@ -49,8 +47,7 @@ const Home: NextPage = () => {
             </Form.Group>
             <Button variant="primary" type="submit">Transfer Token</Button>
           </Form>
-        </div>
-        <div className="col-2" />
+        </ColCenter>
       </div>
     </div>
   )

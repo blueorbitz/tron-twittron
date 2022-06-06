@@ -1,4 +1,5 @@
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { Navbar, Nav, Container, NavDropdown, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { signOut, useSession } from 'next-auth/react';
 import { isTronWebConnected } from '../helpers/utils';
@@ -17,13 +18,19 @@ export default function AppHeader() {
   return (
     <Navbar>
       <Container fluid>
-        <Navbar.Brand href="/">Twittron</Navbar.Brand>
+        <Link href="/" passHref>
+          <Navbar.Brand>Twittron</Navbar.Brand>
+        </Link>
         <Navbar.Toggle aria-controls="navbarScroll" />
-        
+
         <Navbar.Collapse id="navbarScroll">
           <Nav className="me-auto my-2 my-lg-0" style={{ maxHeight: '100px' }} navbarScroll>
-            <Nav.Link href="#action1">Transfer</Nav.Link>
-            <Nav.Link href="#action2">Received</Nav.Link>
+            <Link href="/transfer" passHref>
+              <Nav.Link>Transfer</Nav.Link>
+            </Link>
+            <Link href="/received" passHref>
+              <Nav.Link>Received</Nav.Link>
+            </Link>
             <Nav.Link href="#action3" disabled>Wallet</Nav.Link>
             <Nav.Link href="#">
               <OverlayTrigger placement='bottom' overlay={
