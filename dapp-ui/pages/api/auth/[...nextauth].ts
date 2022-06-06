@@ -16,11 +16,11 @@ export default NextAuth({
     })
   ],
   callbacks: {
-    async session({ session, token, user }) {
-      // Send properties to the client, like an access_token from a provider.
-      console.log('has valid token', token.twitter != null);
-      return session;
-    },
+    // async session({ session, token, user }) {
+    //   // Send properties to the client, like an access_token from a provider.
+    //   // console.log('valid twitter token:', token.twitter);
+    //   return session;
+    // },
 
     async jwt({ token, user, account = {}, profile, isNewUser }) {
       if (account.provider && !token[account.provider])
