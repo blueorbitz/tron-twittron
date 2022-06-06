@@ -2,6 +2,11 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
+Rename `.env.local.sample` to `.env.local`. And replace the parameter as by getting an access with Twitter Developer.
+- Consumer = API key
+- Client = OAuth2
+- AccessToken = AccessToken (most likely not needed for now).
+
 First, run the development server:
 
 ```bash

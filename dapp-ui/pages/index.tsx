@@ -1,9 +1,13 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import type { NextPage } from 'next';
+import Head from 'next/head';
+import Image from 'next/image';
+import styles from '../styles/Home.module.css';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 const Home: NextPage = () => {
+  const { data: session } = useSession();
+  console.log(session);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -16,6 +20,14 @@ const Home: NextPage = () => {
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
+        {!session && <>
+          Not signed in <br/>
+          <button onClick={() => signIn()}>Sign in</button>
+        </>}
+        {session && <>
+          Signed in as {session.user?.name} <br/>
+          <button onClick={() => signOut()}>Sign out</button>
+        </>}
 
         <p className={styles.description}>
           Get started by editing{' '}
@@ -69,4 +81,4 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+export default Home;
