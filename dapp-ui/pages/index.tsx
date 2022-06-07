@@ -1,24 +1,43 @@
 import type { NextPage } from 'next';
 import React from 'react';
 import { Button, Form } from 'react-bootstrap';
+import { ToastContainer, toast } from 'react-toastify';
+import { useSession } from 'next-auth/react';
+import axios from 'axios';
 import AppHeader from '../components/AppHeader';
 import AppNavbar from '../components/AppNavbar';
 import ColCenter from '../components/ColCenter';
-import { transferFund } from '../helpers/utils';
+import { transferFund, walletAddress } from '../helpers/utils';
+import 'react-toastify/dist/ReactToastify.css'
 
 const Home: NextPage = () => {
-  const onSubmit = async (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    const target = e.target as typeof e.target & {
-      handle: { value: string };
-      amount: { value: number };
-      message: { value: boolean };
-    };
-    const handle = target.handle.value;
-    const amount = target.amount.value;
-    // const message = target.message.value;
+  const { data: session } = useSession();
 
-    await transferFund(handle, amount);
+  const onSubmit = async (e: React.SyntheticEvent) => {
+    try {
+      e.preventDefault();
+      const target = e.target as typeof e.target & {
+        handle: { value: string };
+        amount: { value: number };
+        message: { value: boolean };
+      };
+
+      const handle = target.handle.value;
+      const amount = target.amount.value;
+      // const message = target.message.value;
+
+      await transferFund(handle, amount);
+      await axios.post('/api/transaction', {
+        handle, amount,
+        // @ts-ignore
+        sender: session.user && session.user.twitterId,
+        senderWallet: walletAddress(),
+      });
+      toast.success('transferFund successfully!');
+    } catch (error: any) {
+      console.error(error.message || error.error);
+      toast.error(error.message || error.error);
+    }
   };
 
   return (
@@ -51,6 +70,16 @@ const Home: NextPage = () => {
           </Form>
         </ColCenter>
       </div>
+        <ToastContainer
+          position="bottom-left"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          pauseOnHover
+        />
     </div>
   )
 }

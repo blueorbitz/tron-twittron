@@ -40,6 +40,4 @@ export async function transferFund(handle: string, amount: number): Promise<void
       callValue: window.tronWeb.toSun(amount),
       shouldPollResponse: true
     });
-
-  alert('TransferFund Successfully');
 }
