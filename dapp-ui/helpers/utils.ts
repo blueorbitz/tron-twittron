@@ -13,6 +13,11 @@ declare global {
 const contractAddress: string = process.env.CONTRACT_ADDRESS || '';
 let contractHandler: TwittronContract | null = null;
 
+export function twitterId(session): string {
+  // @ts-ignore
+  return session && session.user && session.user.twitterId;
+}
+
 export function walletAddress(): string {
   if (typeof window !== "undefined" && window.tronWeb)
     return window.tronWeb.defaultAddress.base58;
@@ -40,4 +45,31 @@ export async function transferFund(handle: string, amount: number): Promise<void
       callValue: window.tronWeb.toSun(amount),
       shouldPollResponse: true
     });
+}
+
+export function timeSince(date) {
+  // @ts-ignore
+  let seconds = Math.floor((new Date() - date) / 1000);
+  let interval = seconds / 31536000;
+
+  if (interval > 1) {
+    return Math.floor(interval) + " years";
+  }
+  interval = seconds / 2592000;
+  if (interval > 1) {
+    return Math.floor(interval) + " months";
+  }
+  interval = seconds / 86400;
+  if (interval > 1) {
+    return Math.floor(interval) + " days";
+  }
+  interval = seconds / 3600;
+  if (interval > 1) {
+    return Math.floor(interval) + " hours";
+  }
+  interval = seconds / 60;
+  if (interval > 1) {
+    return Math.floor(interval) + " minutes";
+  }
+  return Math.floor(seconds) + " seconds";
 }

@@ -4,7 +4,7 @@ import { getRecords, saveRecord } from '../../helpers/store';
 export default async function handler(req, res) {
   HttpErrorHandler(req, res, {
     getFn: async (query) => {
-      const results = await getRecords(query);
+      const results = await getRecords(query, req);
       return results;
     },
     postFn: async (body) => {
