@@ -2,7 +2,7 @@ import { NextApiRequest } from "next";
 import { getToken } from "next-auth/jwt";
 import clientPromise from "./mongo";
 import TwitterClient from "./TwitterClient";
-import { TransactionRecord, TransactionQuery } from "../types";
+import { TransactionRecord, TransactionQuery, TwitterTokenOptions } from "../types";
 
 export async function saveRecord(record: TransactionRecord): Promise<any> {
   const mclient = await clientPromise;
@@ -37,13 +37,11 @@ export async function getRecords(query: TransactionQuery, req: NextApiRequest): 
     return results;
 
   const token = await getToken({ req, secret: process.env.NEXT_PUBLIC_SECRET });
+  // @ts-ignore
+  const twitter: any = token.twitter;
   const client = TwitterClient.v2({
-    consumer_key: process.env.TWITTER_CONSUMER_KEY ?? '',
-    consumer_secret: process.env.TWITTER_CONSUMER_SECRET ?? '',
-    // @ts-ignore
-    access_token_key: token.twitter.oauth_token,
-    // @ts-ignore
-    access_token_secret: token.twitter.oauth_token_secret,
+    access_token_key: twitter.oauth_token,
+    access_token_secret: twitter.oauth_token_secret,
   });
 
   const tresults = await client.get('users/by', {

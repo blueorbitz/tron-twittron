@@ -1,3 +1,5 @@
+import { toast } from 'react-toastify';
+
 declare global {
   interface Window {
     tronWeb: any;
@@ -13,9 +15,9 @@ declare global {
 const contractAddress: string = process.env.CONTRACT_ADDRESS || '';
 let contractHandler: TwittronContract | null = null;
 
-export function twitterId(session): string {
+export function twitterHandle(session): string {
   // @ts-ignore
-  return session && session.user && session.user.twitterId;
+  return session && session.user && session.user.twitterHandle;
 }
 
 export function walletAddress(): string {
@@ -72,4 +74,9 @@ export function timeSince(date) {
     return Math.floor(interval) + " minutes";
   }
   return Math.floor(seconds) + " seconds";
+}
+
+export function copyToClipboard(text) {
+  navigator.clipboard.writeText(text);
+  toast.success('Text copied to clipboard');
 }

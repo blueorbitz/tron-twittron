@@ -37,7 +37,7 @@ const Home: NextPage = () => {
       await axios.post('/api/transaction', {
         handle, amount, trxId,
         // @ts-ignore
-        sender: session.user && session.user.twitterId,
+        sender: session.user && session.user.twitterHandle,
         senderWallet: walletAddress(),
       });
 

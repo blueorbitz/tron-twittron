@@ -3,14 +3,14 @@ import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { ListGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import * as Icon from 'react-bootstrap-icons';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import axios from 'axios';
 import AppHeader from '../components/AppHeader';
 import AppNavbar from '../components/AppNavbar';
 import ColCenter from '../components/ColCenter';
-import { twitterId, timeSince } from '../helpers/utils';
+import { twitterHandle, timeSince, copyToClipboard } from '../helpers/utils';
 import { TransactionRecord } from '../types';
-import 'react-toastify/dist/ReactToastify.css'
+import 'react-toastify/dist/ReactToastify.css';
 
 const Transfer: NextPage = () => {
   const { data: session } = useSession();
@@ -23,7 +23,7 @@ const Transfer: NextPage = () => {
 
     const params = {
       skip, limit,
-      sender: twitterId(session),
+      sender: twitterHandle(session),
     }
     const results = await axios.get('/api/transaction', { params });
 
@@ -40,11 +40,6 @@ const Transfer: NextPage = () => {
 
     const trxs = transactions.concat(data);
     setTransactions(trxs);
-  }
-
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text);
-    toast.success('Text copied to clipboard');
   }
 
   useEffect(() => {

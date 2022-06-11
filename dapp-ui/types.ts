@@ -17,3 +17,8 @@ export interface TransactionQuery {
   skip?: number;
   limit?: number;
 }
+
+export interface TwitterTokenOptions {
+  access_token_key?: string;
+  access_token_secret?: string;
+}
