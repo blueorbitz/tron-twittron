@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
-import React from 'react';
-import { Button, Form } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Button, Form, Modal } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
@@ -12,6 +12,8 @@ import 'react-toastify/dist/ReactToastify.css'
 
 const Home: NextPage = () => {
   const { data: session } = useSession();
+  const [loadModal, setLoadModal] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   const onSubmit = async (e: React.SyntheticEvent) => {
     try {
@@ -26,17 +28,26 @@ const Home: NextPage = () => {
       const amount = target.amount.value;
       // const message = target.message.value;
 
-      await transferFund(handle, amount);
+      setProcessing(true);
+      setLoadModal(true);
+
+      const trxId = await transferFund(handle, amount);
+      console.log('TrxId', trxId);
+
       await axios.post('/api/transaction', {
-        handle, amount,
+        handle, amount, trxId,
         // @ts-ignore
         sender: session.user && session.user.twitterId,
         senderWallet: walletAddress(),
       });
+
       toast.success('transferFund successfully!');
     } catch (error: any) {
       console.error(error.message || error.error);
       toast.error(error.message || error.error);
+    } finally {
+      setProcessing(false);
+      setLoadModal(false);
     }
   };
 
@@ -66,20 +77,38 @@ const Home: NextPage = () => {
             <Form.Group className="mb-3" controlId="message">
               <Form.Check type="checkbox" label="Direct message to Twitter" />
             </Form.Group>
-            <Button variant="primary" type="submit">Transfer Token</Button>
+            <Button variant="primary" type="submit" disabled={processing}>Transfer Token</Button>
           </Form>
         </ColCenter>
       </div>
-        <ToastContainer
-          position="bottom-left"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          pauseOnHover
-        />
+      <Modal
+        show={loadModal}
+        onHide={() => setLoadModal(false)}
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Processing Transaction</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Please wait, we are connecting with your Installed TronLink for processing.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={() => setLoadModal(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <ToastContainer
+        position="bottom-left"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        pauseOnHover
+      />
     </div>
   )
 }

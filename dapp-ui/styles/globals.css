@@ -14,3 +14,7 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.hash-display-width {
+  max-width: 300px;
+}

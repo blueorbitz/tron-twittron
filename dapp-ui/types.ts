@@ -1,10 +1,12 @@
 export interface TransactionRecord {
   _id?: string;
+  trxId: string;
   handle: string;
   amount: number;
   sender: string;
   senderWallet: string;
   claimWallet?: string;
+  claimTrx?: string;
   timestamp: Date;
   twitter?: any; // data fetch back from twitter
 }

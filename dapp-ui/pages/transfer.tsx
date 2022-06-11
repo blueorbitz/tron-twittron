@@ -1,13 +1,16 @@
 import type { NextPage } from 'next';
 import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { ListGroup } from 'react-bootstrap';
+import { ListGroup, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import * as Icon from 'react-bootstrap-icons';
+import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import AppHeader from '../components/AppHeader';
 import AppNavbar from '../components/AppNavbar';
 import ColCenter from '../components/ColCenter';
 import { twitterId, timeSince } from '../helpers/utils';
 import { TransactionRecord } from '../types';
+import 'react-toastify/dist/ReactToastify.css'
 
 const Transfer: NextPage = () => {
   const { data: session } = useSession();
@@ -39,6 +42,11 @@ const Transfer: NextPage = () => {
     setTransactions(trxs);
   }
 
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Text copied to clipboard');
+  }
+
   useEffect(() => {
     (async function () {
       const data = await fetchData();
@@ -68,6 +76,18 @@ const Transfer: NextPage = () => {
                     <div className="d-flex gap-2 w-100 justify-content-between">
                       <div>
                         <h6 className="mb-0">
+                          {
+                            trx.claimTrx && <React.Fragment>
+                              <OverlayTrigger placement='bottom' overlay={
+                                <Tooltip id="tronLink-tooltip">
+                                  Fund has been claimed.
+                                </Tooltip>
+                              }>
+                                <Icon.CheckCircle />
+                              </OverlayTrigger>
+                              <span>&nbsp;</span>
+                            </React.Fragment>
+                          }
                           {`${trx.amount} TRX to `}
                           <a href={`https://twitter.com/${trx.handle}`} rel="noreferrer" target="_blank">
                             <strong><i>{trx.handle}</i></strong>
@@ -76,7 +96,13 @@ const Transfer: NextPage = () => {
                             }
                           </a>
                         </h6>
-                        <div className="mb-0 mt-1 opacity-75"><pre className='mb-0'>{trx._id}</pre></div>
+                        <div className="mb-0 mt-1 opacity-75">
+                          <pre className="mb-0 d-inline-block text-truncate hash-display-width">
+                            <Icon.Clipboard role="button" onClick={() => copyToClipboard(trx.trxId)} />
+                            <span>&nbsp;</span>
+                            {'TransId:' + trx.trxId}
+                          </pre>
+                        </div>
                       </div>
                       <small className="opacity-50 text-nowrap">{timeSince(new Date(trx.timestamp)) + ' ago'}</small>
                     </div>
@@ -95,6 +121,16 @@ const Transfer: NextPage = () => {
           </ListGroup>
         </ColCenter>
       </div>
+      <ToastContainer
+        position="bottom-left"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        pauseOnHover
+      />
     </div>
   )
 }

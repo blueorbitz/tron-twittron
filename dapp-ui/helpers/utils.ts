@@ -35,15 +35,15 @@ export async function setContract() {
   contractHandler = await window.tronWeb.contract().at(contractAddress);
 }
 
-export async function transferFund(handle: string, amount: number): Promise<void> {
+export async function transferFund(handle: string, amount: number): Promise<any> {
   if (contractHandler == null)
     await setContract();
 
-  await contractHandler?.transferFund(handle)
+  return await contractHandler?.transferFund(handle)
     .send({
       feeLimit: 100_000_000,
       callValue: window.tronWeb.toSun(amount),
-      shouldPollResponse: true
+      shouldPollResponse: false,
     });
 }
 
