@@ -1,5 +1,6 @@
 import { NextApiRequest } from "next";
 import { getToken } from "next-auth/jwt";
+import { ObjectId } from "mongodb";
 import clientPromise from "./mongo";
 import TwitterClient from "./TwitterClient";
 import { TransactionRecord, TransactionQuery, TwitterTokenOptions } from "../types";
@@ -11,6 +12,23 @@ export async function saveRecord(record: TransactionRecord): Promise<any> {
   const mresult = await db.collection(process.env.MONGODB_COLLECTION)
     .insertOne(record);
   
+  return mresult;
+}
+
+export async function updateRecord(record: TransactionRecord): Promise<any> {
+  const mclient = await clientPromise;
+  const db = mclient.db(process.env.MONGODB_DB);
+
+  const mresult = await db.collection(process.env.MONGODB_COLLECTION)
+    .updateOne(
+      { '_id': new ObjectId(record._id) },
+      {
+        $set: {
+          claimTx: record.claimTx,
+          claimWallet: record.claimWallet
+        }
+      }
+    );
   return mresult;
 }
 
@@ -52,7 +70,7 @@ export async function getRecords(query: TransactionQuery, req: NextApiRequest): 
   const tuserMap = {};
   tresults.data.forEach(o => tuserMap[o.username] = o);
 
-  return results.map((trx: TransactionRecord) => {
-    return Object.assign(trx, { twitter: tuserMap[trx.handle] })
+  return results.map((tx: TransactionRecord) => {
+    return Object.assign(tx, { twitter: tuserMap[tx.handle] })
   });
 }

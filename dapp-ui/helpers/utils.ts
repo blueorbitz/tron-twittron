@@ -9,6 +9,7 @@ declare global {
     transferFund(handle: string): any;
     receiptList10(handle: string, startIndex: number): any;
     releaseFund(id: number, handle: string): any;
+    handleAddress(handle: string): any;
   }
 }
 
@@ -37,7 +38,7 @@ export async function setContract() {
   contractHandler = await window.tronWeb.contract().at(contractAddress);
 }
 
-export async function transferFund(handle: string, amount: number): Promise<any> {
+export async function transferFund(handle: string, amount: number): Promise<[string, any]> {
   if (contractHandler == null)
     await setContract();
 
@@ -45,8 +46,28 @@ export async function transferFund(handle: string, amount: number): Promise<any>
     .send({
       feeLimit: 100_000_000,
       callValue: window.tronWeb.toSun(amount),
+      shouldPollResponse: true,
+      keepTxID: true,
+    });
+}
+
+export async function releaseFund(recieptId: number, handle: string): Promise<string> {
+  if (contractHandler == null)
+    await setContract();
+
+  return await contractHandler?.releaseFund(recieptId, handle)
+    .send({
+      feeLimit: 100_000_000,
       shouldPollResponse: false,
     });
+}
+
+export async function handleAddress(handle: string): Promise<string> {
+  if (contractHandler == null)
+    await setContract();
+
+  return await contractHandler?.handleAddress(handle)
+    .call();
 }
 
 export function timeSince(date) {

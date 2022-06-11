@@ -38,15 +38,14 @@ const Transfer: NextPage = () => {
     if (data.length === 0)
       setSkip(-1)
 
-    const trxs = transactions.concat(data);
-    setTransactions(trxs);
+    const txs = transactions.concat(data);
+    setTransactions(txs);
   }
 
   useEffect(() => {
     (async function () {
       const data = await fetchData();
       setTransactions(data);
-      console.log(data);
     })();
   }, [])
 
@@ -63,16 +62,16 @@ const Transfer: NextPage = () => {
         <ColCenter>
           <ListGroup>
             {
-              transactions.map((trx: TransactionRecord, index: number) => {
-                const profileImg = trx.twitter.profile_image_url ?? "https://t4.ftcdn.net/jpg/00/65/77/27/360_F_65772719_A1UV5kLi5nCEWI0BNLLiFaBPEkUbv5Fv.jpg";
+              transactions.map((tx: TransactionRecord, index: number) => {
+                const profileImg = tx.twitter.profile_image_url ?? "https://t4.ftcdn.net/jpg/00/65/77/27/360_F_65772719_A1UV5kLi5nCEWI0BNLLiFaBPEkUbv5Fv.jpg";
                 return (
-                  <ListGroup.Item key={trx._id} className="d-flex flex-row gap-3 py-2">
-                    <img src={profileImg} alt={trx.handle} width="32" height="32" className="rounded-circle flex-shrink-0" />
+                  <ListGroup.Item key={tx._id} className="d-flex flex-row gap-3 py-2">
+                    <img src={profileImg} alt={tx.handle} width="32" height="32" className="rounded-circle flex-shrink-0" />
                     <div className="d-flex gap-2 w-100 justify-content-between">
                       <div>
                         <h6 className="mb-0">
                           {
-                            trx.claimTrx && <React.Fragment>
+                            tx.claimTx && <React.Fragment>
                               <OverlayTrigger placement='bottom' overlay={
                                 <Tooltip id="tronLink-tooltip">
                                   Fund has been claimed.
@@ -83,9 +82,9 @@ const Transfer: NextPage = () => {
                               <span>&nbsp;</span>
                             </React.Fragment>
                           }
-                          {`${trx.amount} TRX to `}
-                          <a href={`https://twitter.com/${trx.handle}`} rel="noreferrer" target="_blank">
-                            <strong><i>{trx.handle}</i></strong>
+                          {`${tx.amount} TRX to `}
+                          <a href={`https://twitter.com/${tx.handle}`} rel="noreferrer" target="_blank">
+                            <strong><i>{tx.handle}</i></strong>
                             {
                               <i className="bi bi-patch-check-fill text-primary mx-1"></i>
                             }
@@ -93,13 +92,13 @@ const Transfer: NextPage = () => {
                         </h6>
                         <div className="mb-0 mt-1 opacity-75">
                           <pre className="mb-0 d-inline-block text-truncate hash-display-width">
-                            <Icon.Clipboard role="button" onClick={() => copyToClipboard(trx.trxId)} />
+                            <Icon.Clipboard role="button" onClick={() => copyToClipboard(tx.txId)} />
                             <span>&nbsp;</span>
-                            {'TransId:' + trx.trxId}
+                            {'TransId:' + tx.txId}
                           </pre>
                         </div>
                       </div>
-                      <small className="opacity-50 text-nowrap">{timeSince(new Date(trx.timestamp)) + ' ago'}</small>
+                      <small className="opacity-50 text-nowrap">{timeSince(new Date(tx.timestamp)) + ' ago'}</small>
                     </div>
                   </ListGroup.Item>
                 );

@@ -7,7 +7,7 @@ export class HttpError extends Error {
   }
 }
 
-export default async function HttpErrorHandler(req, res, { getFn, postFn }) {
+export default async function HttpErrorHandler(req, res, { getFn, postFn, putFn }) {
   const method = req.method.toUpperCase();
   try {
 
@@ -15,6 +15,8 @@ export default async function HttpErrorHandler(req, res, { getFn, postFn }) {
       res.status(200).json(await getFn(req.query));
     else if (method === 'POST' && postFn != null)
       res.status(200).json(await postFn(req.body));
+    else if (method === 'PUT' && putFn != null)
+      res.status(200).json(await putFn(req.body));
     else
       res.status(405).send();
 

@@ -31,11 +31,12 @@ const Home: NextPage = () => {
       setProcessing(true);
       setLoadModal(true);
 
-      const trxId = await transferFund(handle, amount);
-      console.log('TrxId', trxId);
+      const [txId, decoded] = await transferFund(handle, amount);
+      console.log('res:', txId, decoded);
 
+      const recieptId = decoded.toNumber();
       await axios.post('/api/transaction', {
-        handle, amount, trxId,
+        handle, amount, txId, recieptId,
         // @ts-ignore
         sender: session.user && session.user.twitterHandle,
         senderWallet: walletAddress(),

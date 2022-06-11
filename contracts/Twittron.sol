@@ -31,7 +31,7 @@ contract Twittron {
     handleAddress[handle] = walletAddress;
   }
 
-  function transferFund(string calldata handle) external payable {
+  function transferFund(string calldata handle) external payable returns (uint) {
     require(bytes(handle).length > 0, "twitter handle is required.");
 
     address receiver = handleAddress[handle];
@@ -49,6 +49,8 @@ contract Twittron {
       handleVault[handle].push(id);
       receiptId[id] = TransferReceipt(id, msg.sender, msg.value, block.timestamp, true);
     }
+    
+    return id;
   }
 
   function receiptList10(string memory handle, uint startIndex) public view returns (TransferReceipt[] memory) {
@@ -65,7 +67,7 @@ contract Twittron {
     return receipts;
   }
   
-  function releaseFund(uint id, string memory handle) public _ownerOnly payable {
+  function releaseFund(uint id, string memory handle) public payable {
     require(bytes(handle).length > 0, "twitter handle is required.");
 
     TransferReceipt memory receipt = receiptId[id];

@@ -1,5 +1,5 @@
 import HttpErrorHandler from '../../helpers/HttpError';
-import { getRecords, saveRecord } from '../../helpers/store';
+import { getRecords, saveRecord, updateRecord } from '../../helpers/store';
 
 export default async function handler(req, res) {
   HttpErrorHandler(req, res, {
@@ -14,6 +14,10 @@ export default async function handler(req, res) {
       }
 
       const result = await saveRecord(param);
+      return result;
+    },
+    putFn: async (body) => {
+      const result = await updateRecord(body);
       return result;
     },
   });
