@@ -1,3 +1,5 @@
+import type { NextApiRequest, NextApiResponse } from 'next';
+
 export class HttpError extends Error {
   status: number;
 
@@ -7,8 +9,12 @@ export class HttpError extends Error {
   }
 }
 
-export default async function HttpErrorHandler(req, res, { getFn, postFn, putFn }) {
-  const method = req.method.toUpperCase();
+export default async function HttpErrorHandler(
+  req: NextApiRequest, 
+  res: NextApiResponse, 
+  { getFn, postFn, putFn }: any
+) {
+  const method = req.method?.toUpperCase();
   try {
 
     if (method === 'GET' && getFn != null)
@@ -18,7 +24,7 @@ export default async function HttpErrorHandler(req, res, { getFn, postFn, putFn 
     else if (method === 'PUT' && putFn != null)
       res.status(200).json(await putFn(req.body));
     else
-      res.status(405).send();
+      res.status(405).send({});
 
   } catch (e) {
     if (e instanceof HttpError) {
@@ -26,7 +32,7 @@ export default async function HttpErrorHandler(req, res, { getFn, postFn, putFn 
     }
     else {
       console.error(e);
-      res.status(500).send();
+      res.status(500).send({});
     }
   }
 }

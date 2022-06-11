@@ -10,6 +10,7 @@ declare global {
     receiptList10(handle: string, startIndex: number): any;
     releaseFund(id: number, handle: string): any;
     handleAddress(handle: string): any;
+    updateHandleAddress(handle: string, walletAddress: string): any;
   }
 }
 
@@ -68,6 +69,18 @@ export async function handleAddress(handle: string): Promise<string> {
 
   return await contractHandler?.handleAddress(handle)
     .call();
+}
+
+export async function updateHandleAddress(handle: string, walletAddress: string): Promise<any> {
+  if (contractHandler == null)
+    await setContract();
+
+  console.log('here', walletAddress, process.env.OWNER_PRIVATE_KEY);
+  return await contractHandler?.updateHandleAddress(handle, walletAddress)
+    .send({
+      feeLimit: 100_000_000,
+      shouldPollResponse: false,
+    }, process.env.OWNER_PRIVATE_KEY);
 }
 
 export function timeSince(date) {

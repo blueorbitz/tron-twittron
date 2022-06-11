@@ -1,20 +1,21 @@
 import type { NextPage } from 'next';
 import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { Button, ListGroup, OverlayTrigger, Tooltip, Modal } from 'react-bootstrap';
+import { Button, ListGroup, OverlayTrigger, Tooltip, Modal, Form } from 'react-bootstrap';
 import * as Icon from 'react-bootstrap-icons';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import AppHeader from '../components/AppHeader';
 import AppNavbar from '../components/AppNavbar';
 import ColCenter from '../components/ColCenter';
-import { twitterHandle, timeSince, copyToClipboard, handleAddress, releaseFund } from '../helpers/utils';
+import { twitterHandle, timeSince, copyToClipboard, handleAddress, releaseFund, updateHandleAddress } from '../helpers/utils';
 import { TransactionRecord } from '../types';
 import 'react-toastify/dist/ReactToastify.css'
 
 const Received: NextPage = () => {
   const { data: session } = useSession();
   const [loadModal, setLoadModal] = useState(false);
+  const [walletModal, setWalletModal] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [claimWallet, setClaimWallet] = useState('');
 
@@ -77,12 +78,49 @@ const Received: NextPage = () => {
     }
   }
 
+  const updateWallet = async (e: React.SyntheticEvent) => {
+    try {
+      e.preventDefault();
+      const target = e.target as typeof e.target & {
+        wallet: { value: string };
+      };
+
+      const wallet = target.wallet.value;
+      setProcessing(true);
+      if (wallet === claimWallet) 
+        throw new Error("You're using the same wallet address!");
+
+      // call to backend, due to owner call
+      const res = await axios.post("/api/oracle", { wallet });
+      console.log("oracle:", res);
+      toast.success("Successfully updated wallet address");
+
+    } catch (error: any) {
+      console.error(error.message || error.error);
+      toast.error(error.message || error.error);
+    } finally {
+      setProcessing(false);
+      setWalletModal(false);
+    }
+  }
+
   useEffect(() => {
     (async function () {
       const data = await fetchData();
       setTransactions(data);
     })();
   }, [])
+
+  useEffect(() => {
+    (async function () {
+      if (walletModal === false)
+        return;
+
+      const addressInHex = await handleAddress(twitterHandle(session));
+      if (addressInHex !== "410000000000000000000000000000000000000000")
+        setClaimWallet(window.tronWeb.address.fromHex(addressInHex));
+    })();
+  }, [walletModal]);
 
   return (
     <div className="container">
@@ -91,7 +129,12 @@ const Received: NextPage = () => {
 
       <div className="row">
         <ColCenter>
-          <h4 className="py-3">Received History</h4>
+          <div className="d-flex  justify-content-between align-items-center">
+            <h4 className="py-3">Received History</h4>
+            <div>
+              <Button onClick={() => setWalletModal(true)}>Set Wallet</Button>
+            </div>
+          </div>
         </ColCenter>
 
         <ColCenter>
@@ -112,17 +155,21 @@ const Received: NextPage = () => {
                           </a>
                         </h6>
                         <div className="mb-0 mt-1 opacity-75">
-                          <pre className="mb-0 d-inline-block text-truncate hash-display-width">
-                            <Icon.Clipboard role="button" onClick={() => copyToClipboard(tx.txId)} />
-                            <span>&nbsp;</span>
-                            {'TransId:' + tx.txId}
-                          </pre>
-                          {
-                            tx.claimTx && <pre className="mb-0 d-inline-block text-truncate hash-display-width">
+                          <div>
+                            <pre className="mb-0 d-inline-block text-truncate hash-display-width">
                               <Icon.Clipboard role="button" onClick={() => copyToClipboard(tx.txId)} />
                               <span>&nbsp;</span>
-                              {'ClaimTx:' + tx.claimTx}
+                              {'TransId:' + tx.txId}
                             </pre>
+                          </div>
+                          {
+                            tx.claimTx && <div>
+                              <pre className="mb-0 d-inline-block text-truncate hash-display-width">
+                                <Icon.Clipboard role="button" onClick={() => copyToClipboard(tx.txId)} />
+                                <span>&nbsp;</span>
+                                {'ClaimTx:' + tx.claimTx}
+                              </pre>
+                            </div>
                           }
                         </div>
                         <small className="opacity-50 text-nowrap">{timeSince(new Date(tx.timestamp)) + ' ago'}</small>
@@ -135,7 +182,7 @@ const Received: NextPage = () => {
                         {
                           tx.claimTx
                             ? <Button disabled><Icon.CartCheckFill /></Button>
-                            : <Button onClick={() => redeem(tx, index)}><Icon.Cart /></Button>
+                            : <Button disabled={processing} onClick={() => redeem(tx, index)}><Icon.Cart /></Button>
                         }
                       </OverlayTrigger>
                     </div>
@@ -172,6 +219,25 @@ const Received: NextPage = () => {
             Close
           </Button>
         </Modal.Footer>
+      </Modal>
+      <Modal
+        show={walletModal}
+        onHide={() => setWalletModal(false)}
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Link Twitter @handle to TronLink</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={updateWallet}>
+            <Form.Group className="mb-3" controlId="wallet">
+              <Form.Label>New Wallet Address</Form.Label>
+              <Form.Control type="text" placeholder={claimWallet} />
+            </Form.Group>
+            <Button variant="primary" type="submit" disabled={processing}>Update</Button>
+          </Form>
+        </Modal.Body>
       </Modal>
       <ToastContainer
         position="bottom-left"
