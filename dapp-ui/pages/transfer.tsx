@@ -96,6 +96,15 @@ const Transfer: NextPage = () => {
                             <span>&nbsp;</span>
                             {'TransId:' + tx.txId}
                           </pre>
+                          {
+                            tx.claimTx && <div>
+                              <pre className="mb-0 d-inline-block text-truncate hash-display-width">
+                                <Icon.Clipboard role="button" onClick={() => copyToClipboard(tx.txId)} />
+                                <span>&nbsp;</span>
+                                {'ClaimTx:' + tx.claimTx}
+                              </pre>
+                            </div>
+                          }
                         </div>
                       </div>
                       <small className="opacity-50 text-nowrap">{timeSince(new Date(tx.timestamp)) + ' ago'}</small>
