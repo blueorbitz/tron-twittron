@@ -21,12 +21,12 @@ const Home: NextPage = () => {
       const target = e.target as typeof e.target & {
         handle: { value: string };
         amount: { value: number };
-        message: { value: boolean };
+        message: { checked: boolean };
       };
 
       const handle = target.handle.value;
       const amount = target.amount.value;
-      // const message = target.message.value;
+      const sendDm = target.message.checked;
 
       setProcessing(true);
       setLoadModal(true);
@@ -35,12 +35,16 @@ const Home: NextPage = () => {
       console.log('res:', txId, decoded);
 
       const recieptId = decoded.toNumber();
-      await axios.post('/api/transaction', {
+      const param = {
         handle, amount, txId, recieptId,
         // @ts-ignore
         sender: session.user && session.user.twitterHandle,
         senderWallet: walletAddress(),
-      });
+      };
+
+      await axios.post('/api/transaction', param);
+      if (sendDm)
+        await axios.post('/api/twitter', param);
 
       toast.success('transferFund successfully!');
     } catch (error: any) {
