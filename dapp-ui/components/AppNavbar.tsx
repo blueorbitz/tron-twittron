@@ -44,8 +44,8 @@ export default function AppHeader() {
           </Nav>
         </Navbar.Collapse>
         <NavDropdown title={user.name} id="navbarScrollingDropdown" align="end">
-          <NavDropdown.Item href="#action3">Connect Wallet</NavDropdown.Item>
-          <NavDropdown.Divider />
+          {/* <NavDropdown.Item href="#action3">Connect Wallet</NavDropdown.Item> */}
+          {/* <NavDropdown.Divider /> */}
           <NavDropdown.Item onClick={onSignOut}>
             Sign out from Twitter
           </NavDropdown.Item>
