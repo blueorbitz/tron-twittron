@@ -1,0 +1,20 @@
+{
+  "name": "twittron",
+  "version": "1.0.0",
+  "description": "- Load the contract in [Tron IDE](http://www.tronide.io)\r - Compile and [deploy](https://developers.tron.network/docs/deploying) the smart contract.",
+  "main": "index.js",
+  "scripts": {
+    "heroku-deploy": "git subtree push --prefix dapp-ui heroku master",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blueorbitz/tron-twittron.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/blueorbitz/tron-twittron/issues"
+  },
+  "homepage": "https://github.com/blueorbitz/tron-twittron#readme"
+}

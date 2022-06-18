@@ -20,9 +20,9 @@ export default NextAuth({
   callbacks: {
     async session({ session, token, user }) {
       // Send properties to the client, like an access_token from a provider.
-      if (token.twitter) {
+      if (session && token.twitter) {
         const twitter: any = token.twitter;
-        Object.assign(session.user, {
+        Object.assign(session.user ?? {}, {
           twitterId: twitter.providerAccountId,
           twitterHandle: twitter.username,
         });
