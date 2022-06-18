@@ -34,21 +34,9 @@ contract Twittron {
   function transferFund(string calldata handle) external payable returns (uint) {
     require(bytes(handle).length > 0, "twitter handle is required.");
 
-    address receiver = handleAddress[handle];
-    // require(_address != address(0), "Twitter handle has not registered with twitter oracle.");
-
     uint id = nextCounterId();
-    if (receiver == address(0)) {
-      // Handle is not registered with the oracle, store the value to the vault.
-      handleVault[handle].push(id);
-      receiptId[id] = TransferReceipt(id, msg.sender, msg.value, block.timestamp, false);
-    }
-    else {
-      // disburse the fund immediately
-      payable(receiver).transfer(msg.value);
-      handleVault[handle].push(id);
-      receiptId[id] = TransferReceipt(id, msg.sender, msg.value, block.timestamp, true);
-    }
+    handleVault[handle].push(id);
+    receiptId[id] = TransferReceipt(id, msg.sender, msg.value, block.timestamp, false);
     
     return id;
   }
