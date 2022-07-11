@@ -93,8 +93,8 @@ const Received: NextPage = () => {
         throw new Error("You're using the same wallet address!");
 
       // call to backend, due to owner call
-      // const res = await axios.post("/api/oracle", { wallet });
-      // console.log("oracle:", res);
+      const res = await axios.post("/api/oracle", { wallet });
+      console.log("oracle:", res);
       toast.success("Successfully updated wallet address");
 
     } catch (error: any) {
