@@ -79,20 +79,22 @@ const Received: NextPage = () => {
   }
 
   const updateWallet = async (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    setProcessing(true);
+
     try {
-      e.preventDefault();
       const target = e.target as typeof e.target & {
         wallet: { value: string };
       };
 
       const wallet = target.wallet.value;
-      setProcessing(true);
+      
       if (wallet === claimWallet) 
         throw new Error("You're using the same wallet address!");
 
       // call to backend, due to owner call
-      const res = await axios.post("/api/oracle", { wallet });
-      console.log("oracle:", res);
+      // const res = await axios.post("/api/oracle", { wallet });
+      // console.log("oracle:", res);
       toast.success("Successfully updated wallet address");
 
     } catch (error: any) {
@@ -233,9 +235,9 @@ const Received: NextPage = () => {
           <Form onSubmit={updateWallet}>
             <Form.Group className="mb-3" controlId="wallet">
               <Form.Label>New Wallet Address</Form.Label>
-              <Form.Control type="text" placeholder={claimWallet} />
+              <Form.Control type="text" placeholder={claimWallet} disabled={processing} />
             </Form.Group>
-            <Button variant="primary" type="submit" disabled={processing}>Update</Button>
+            <Button variant="primary" type="submit" disabled={processing}>{processing ? 'Updating Wallet...' : 'Update'}</Button>
           </Form>
         </Modal.Body>
       </Modal>
