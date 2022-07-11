@@ -1,1 +1,5 @@
 README_secret.md
+
+/dapp-ui/.env
+/dapp-ui/.npmrc
+/dapp-ui/pnpm-lock.yaml
