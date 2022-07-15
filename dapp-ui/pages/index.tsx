@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import React, { useState } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
@@ -12,12 +12,13 @@ import 'react-toastify/dist/ReactToastify.css'
 
 const Home: NextPage = () => {
   const { data: session } = useSession();
-  const [loadModal, setLoadModal] = useState(false);
   const [processing, setProcessing] = useState(false);
 
   const onSubmit = async (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    setProcessing(true);
+
     try {
-      e.preventDefault();
       const target = e.target as typeof e.target & {
         handle: { value: string };
         amount: { value: number };
@@ -27,9 +28,6 @@ const Home: NextPage = () => {
       const handle = target.handle.value;
       const amount = target.amount.value;
       const sendDm = target.message.checked;
-
-      setProcessing(true);
-      setLoadModal(true);
 
       const [txId, decoded] = await transferFund(handle, amount);
       console.log('res:', txId, decoded);
@@ -52,7 +50,6 @@ const Home: NextPage = () => {
       toast.error(error.message || error.error);
     } finally {
       setProcessing(false);
-      setLoadModal(false);
     }
   };
 
@@ -68,42 +65,24 @@ const Home: NextPage = () => {
 
         <ColCenter>
           <Form onSubmit={onSubmit}>
+
             <Form.Group className="mb-3" controlId="handle">
               <Form.Label>Twitter @handle</Form.Label>
-              <Form.Control type="text" placeholder="@username" />
-              <Form.Text className="text-muted">
-                Invalid handle name
-              </Form.Text>
+              <Form.Control type="text" placeholder="@username" disabled={processing} required />
             </Form.Group>
+
             <Form.Group className="mb-3" controlId="amount">
               <Form.Label>Amount (in Trx)</Form.Label>
-              <Form.Control type="number" />
+              <Form.Control type="number" disabled={processing} required />
             </Form.Group>
+
             <Form.Group className="mb-3" controlId="message">
-              <Form.Check type="checkbox" label="Direct message to Twitter" />
+              <Form.Check type="checkbox" label="Direct message to Twitter" disabled={processing} />
             </Form.Group>
-            <Button variant="primary" type="submit" disabled={processing}>Transfer Token</Button>
+            <Button variant="primary" type="submit" disabled={processing}>{processing ? 'Processing Transaction…' : 'Transfer Token'}</Button>
           </Form>
         </ColCenter>
       </div>
-      <Modal
-        show={loadModal}
-        onHide={() => setLoadModal(false)}
-        backdrop="static"
-        keyboard={false}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Processing Transaction</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Please wait, we are connecting with your Installed TronLink for processing.
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={() => setLoadModal(false)}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
       <ToastContainer
         position="bottom-left"
         autoClose={5000}
