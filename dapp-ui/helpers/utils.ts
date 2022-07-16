@@ -1,3 +1,4 @@
+import { ArrowReturnRight } from 'react-bootstrap-icons';
 import { toast } from 'react-toastify';
 
 declare global {
@@ -113,4 +114,12 @@ export function timeSince(date) {
 export function copyToClipboard(text) {
   navigator.clipboard.writeText(text);
   toast.success('Text copied to clipboard');
+}
+
+export function extractErrorMessage(error) {
+  let message: string = '';
+  typeof error === 'string'
+    ? message = error
+    : message = error.message || error.error;
+  return message;
 }
