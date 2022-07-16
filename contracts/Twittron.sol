@@ -15,6 +15,8 @@ contract Twittron {
   mapping(string => address) public handleAddress;
   mapping(uint => TransferReceipt) public receiptId;
   mapping(string => uint[]) public handleVault;
+  
+  event TransferEvent(address indexed _from, uint _value, uint receiptId);
 
   constructor() {
     owner = msg.sender;
@@ -37,7 +39,9 @@ contract Twittron {
     uint id = nextCounterId();
     handleVault[handle].push(id);
     receiptId[id] = TransferReceipt(id, msg.sender, msg.value, block.timestamp, false);
-    
+
+    emit TransferEvent(msg.sender, msg.value, id);
+
     return id;
   }
 

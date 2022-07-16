@@ -12,6 +12,8 @@ import useTronWeb from '../helpers/useTronWeb';
 import 'react-toastify/dist/ReactToastify.css'
 import Link from 'next/link';
 
+const solidityNode: string = process.env.SOLIDITY_NODE || '';
+
 const Home: NextPage = () => {
   const { data: session } = useSession();
   const [processing, setProcessing] = useState(false);
@@ -32,12 +34,10 @@ const Home: NextPage = () => {
       const amount = target.amount.value;
       const sendDm = target.message.checked;
 
-      const [txId, decoded] = await transferFund(handle, amount);
-      console.log('res:', txId, decoded);
+      const txId = await transferFund(handle, amount);
 
-      const recieptId = decoded.toNumber();
       const param = {
-        handle, amount, txId, recieptId,
+        handle, amount, txId, recieptId: -1,
         // @ts-ignore
         sender: session.user && session.user.twitterHandle,
         senderWallet: tron.address,
@@ -88,7 +88,7 @@ const Home: NextPage = () => {
                 ? <Button variant="primary" type="submit" disabled={processing}>{processing ? 'Processing Transaction…' : 'Transfer Token'}</Button>
                 : <>
                   <Button variant="danger" type="submit" disabled>Wallet not connected</Button>
-                  <p className="text-muted">Only support Nile Testnet.</p>
+                  <p className="text-muted">Supported node: {solidityNode}.</p>
                 </>
             }
           </Form>

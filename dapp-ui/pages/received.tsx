@@ -13,6 +13,7 @@ import {
   twitterHandle, handleAddress, releaseFund, 
   timeSince, copyToClipboard,
   extractErrorMessage,
+  getTransactionInfo,
 } from '../helpers/utils';
 import { TransactionRecord } from '../types';
 import 'react-toastify/dist/ReactToastify.css'
@@ -65,10 +66,15 @@ const Received: NextPage = () => {
       setProcessing(true);
       setLoadModal(true);
 
-      const claimTx = await releaseFund(tx.recieptId, twitterHandle(session));
+      const txInfo = await getTransactionInfo(tx.txId, true);
+      const recieptId = parseInt(txInfo?.contractResult?.at(0) ?? -1);
+      if (txInfo.contractResult == null || recieptId === -1)
+        throw new Error("Invalid receipt id for this TxId");
+
+      const claimTx = await releaseFund(recieptId, twitterHandle(session));
       const param = {
         _id: tx._id,
-        claimTx, claimWallet: _claimWallet,
+        recieptId, claimTx, claimWallet: _claimWallet,
       };
       await axios.put('/api/transaction', param);
 
