@@ -62,6 +62,10 @@ const Transfer: NextPage = () => {
         <ColCenter>
           <ListGroup>
             {
+              transactions.length !== 0 ? null :
+                <p>No transaction record was found.</p>
+            }
+            {
               transactions.map((tx: TransactionRecord, index: number) => {
                 const profileImg = tx.twitter.profile_image_url ?? "https://t4.ftcdn.net/jpg/00/65/77/27/360_F_65772719_A1UV5kLi5nCEWI0BNLLiFaBPEkUbv5Fv.jpg";
                 return (
