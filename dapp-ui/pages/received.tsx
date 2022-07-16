@@ -8,12 +8,18 @@ import axios from 'axios';
 import AppHeader from '../components/AppHeader';
 import AppNavbar from '../components/AppNavbar';
 import ColCenter from '../components/ColCenter';
-import { twitterHandle, timeSince, copyToClipboard, handleAddress, releaseFund, updateHandleAddress } from '../helpers/utils';
+import useTronWeb from '../helpers/useTronWeb';
+import {
+  twitterHandle, handleAddress, releaseFund, 
+  timeSince, copyToClipboard,
+  extractErrorMessage,
+} from '../helpers/utils';
 import { TransactionRecord } from '../types';
 import 'react-toastify/dist/ReactToastify.css'
 
 const Received: NextPage = () => {
   const { data: session } = useSession();
+  const tron = useTronWeb();
   const [loadModal, setLoadModal] = useState(false);
   const [walletModal, setWalletModal] = useState(false);
   const [processing, setProcessing] = useState(false);
@@ -70,8 +76,8 @@ const Received: NextPage = () => {
       setTransactions(transactions);
 
     } catch (error: any) {
-      console.error(error.message || error.error);
-      toast.error(error.message || error.error);
+      console.error(error);
+      toast.error(extractErrorMessage(error));
     } finally {
       setProcessing(false);
       setLoadModal(false);
@@ -98,8 +104,8 @@ const Received: NextPage = () => {
       toast.success("Successfully updated wallet address");
 
     } catch (error: any) {
-      console.error(error.message || error.error);
-      toast.error(error.message || error.error);
+      console.error(error);
+      toast.error(extractErrorMessage(error));
     } finally {
       setProcessing(false);
       setWalletModal(false);
@@ -134,7 +140,7 @@ const Received: NextPage = () => {
           <div className="d-flex  justify-content-between align-items-center">
             <h4 className="py-3">Received History</h4>
             <div>
-              <Button onClick={() => setWalletModal(true)}>Set Wallet</Button>
+              <Button onClick={() => setWalletModal(true)} disabled={!tron.isConnect}>Set Wallet</Button>
             </div>
           </div>
         </ColCenter>
@@ -144,6 +150,10 @@ const Received: NextPage = () => {
             {
               transactions.length !== 0 ? null :
                 <p>No transaction record was found.</p>
+            }
+            {
+              tron.isConnect ? null :
+                <p className="text-danger">TronWeb not connected. Cannot perform any action.</p>
             }
             {
               transactions.map((tx: TransactionRecord, index: number) => {
@@ -188,7 +198,7 @@ const Received: NextPage = () => {
                         {
                           tx.claimTx
                             ? <Button disabled><Icon.CartCheckFill /></Button>
-                            : <Button disabled={processing} onClick={() => redeem(tx, index)}><Icon.Cart /></Button>
+                            : <Button disabled={!tron.isConnect || processing} onClick={() => redeem(tx, index)}><Icon.Cart /></Button>
                         }
                       </OverlayTrigger>
                     </div>

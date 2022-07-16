@@ -32,7 +32,6 @@ export default function useTronWeb(): TronWebHookResponse {
   }
 
   useEffect(() => {
-    console.log('TronWeb connection:', isTronWebConnected());
     globalThis.addEventListener('message', tronLinkEventListener);
     return () => {
       globalThis.removeEventListener('message', tronLinkEventListener);

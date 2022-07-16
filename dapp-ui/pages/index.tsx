@@ -7,7 +7,7 @@ import axios from 'axios';
 import AppHeader from '../components/AppHeader';
 import AppNavbar from '../components/AppNavbar';
 import ColCenter from '../components/ColCenter';
-import { transferFund } from '../helpers/utils';
+import { transferFund, extractErrorMessage } from '../helpers/utils';
 import useTronWeb from '../helpers/useTronWeb';
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -48,13 +48,8 @@ const Home: NextPage = () => {
 
       toast.success('transferFund successfully!');
     } catch (error: any) {
-      let message: string = '';
-      typeof error === 'string'
-        ? message = error
-        : message = error.message || error.error;
-
       console.error(error);
-      toast.error(message);
+      toast.error(extractErrorMessage(error));
     } finally {
       setProcessing(false);
     }
