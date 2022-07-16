@@ -2,10 +2,22 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-Rename `.env.local.sample` to `.env.local`. And replace the parameter as by getting an access with Twitter Developer.
+Rename `.env.local.sample` to `.env.local`.
+
+Replace the parameter as by getting an access with Twitter Developer.
 - Consumer = API key
 - Client = OAuth2
 - AccessToken = AccessToken (most likely not needed for now).
+
+Choose your solidity node that you want your apps to run and insert the following related to the smart contract.
+- SOLIDITY_NODE = eg. `https://api.shasta.trongrid.io`
+- CONTRACT_ADDRESS = your compiled contract address
+- OWNER_PRIVATE_KEY = private key that used to compile the contract.
+
+Create a mongodb from the mongo atlas.
+- MONGODB_URI = eg. `mongodb+srv://user:password@xxx.xxx.mongodb.net/xxx`
+- MONGODB_DB = database name
+- MONGODB_COLLECTION = collection name
 
 First, run the development server:
 
@@ -17,11 +29,6 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
 ## Learn More
 

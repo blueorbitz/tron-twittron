@@ -16,6 +16,7 @@ declare global {
 }
 
 const contractAddress: string = process.env.CONTRACT_ADDRESS || '';
+const solidityNode: string = process.env.SOLIDITY_NODE || '';
 let contractHandler: TwittronContract | null = null;
 
 export function twitterHandle(session): string {
@@ -34,8 +35,7 @@ export function isTronWebConnected(): boolean {
   return typeof window !== "undefined"
     && window.tronWeb
     && window.tronWeb.defaultAddress.base58
-    // && window.tronWeb.solidityNode.host === 'https://api.nileex.io';
-    && window.tronWeb.solidityNode.host === 'https://api.shasta.trongrid.io';
+    && window.tronWeb.solidityNode.host === solidityNode;
 }
 
 export async function setContract() {

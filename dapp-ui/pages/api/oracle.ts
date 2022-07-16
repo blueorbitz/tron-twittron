@@ -11,8 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         throw new HttpError('Unauthorize', 405);
 
       const tronWeb = new TronWeb({
-        fullHost: 'https://api.shasta.trongrid.io',
-        // fullHost: 'https://api.nileex.io',
+        fullHost: process.env.SOLIDITY_NODE || '',
         privateKey: process.env.OWNER_PRIVATE_KEY,
       });
       const contractHandler = await tronWeb.contract().at(process.env.CONTRACT_ADDRESS);

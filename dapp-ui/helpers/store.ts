@@ -24,6 +24,7 @@ export async function updateRecord(record: TransactionRecord): Promise<any> {
       { '_id': new ObjectId(record._id) },
       {
         $set: {
+          recieptId: record.recieptId,
           claimTx: record.claimTx,
           claimWallet: record.claimWallet
         }
