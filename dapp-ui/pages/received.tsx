@@ -142,6 +142,10 @@ const Received: NextPage = () => {
         <ColCenter>
           <ListGroup>
             {
+              transactions.length !== 0 ? null :
+                <p>No transaction record was found.</p>
+            }
+            {
               transactions.map((tx: TransactionRecord, index: number) => {
                 return (
                   <ListGroup.Item key={tx._id} className="d-flex flex-row gap-3 py-2">
@@ -229,13 +233,16 @@ const Received: NextPage = () => {
         keyboard={false}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Link Twitter @handle to TronLink</Modal.Title>
+          <Modal.Title>Link @{twitterHandle(session)} to wallet address</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={updateWallet}>
             <Form.Group className="mb-3" controlId="wallet">
-              <Form.Label>New Wallet Address</Form.Label>
+              <Form.Label>Wallet Address</Form.Label>
               <Form.Control type="text" placeholder={claimWallet} disabled={processing} />
+              <Form.Text className="text-muted" style={{ display: claimWallet === '' ? 'none' : 'block'}}>
+                Tron wallet has registered.
+              </Form.Text>
             </Form.Group>
             <Button variant="primary" type="submit" disabled={processing}>{processing ? 'Updating Wallet...' : 'Update'}</Button>
           </Form>

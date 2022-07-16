@@ -2,11 +2,13 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { Navbar, Nav, Container, NavDropdown, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { signOut, useSession } from 'next-auth/react';
-import { isTronWebConnected } from '../helpers/utils';
+import useTronWeb from '../helpers/useTronWeb';
+import { useEffect, useState } from 'react';
 
 export default function AppHeader() {
   const router = useRouter();
   const { data: session } = useSession();
+  const tron = useTronWeb();
 
   const user = (session && session.user) || {};
 
@@ -35,10 +37,15 @@ export default function AppHeader() {
             <Nav.Link href="#">
               <OverlayTrigger placement='bottom' overlay={
                 <Tooltip id="tronLink-tooltip">
-                  TronLink is <strong>{isTronWebConnected() ? "connected" : "not connected"}</strong>.
+                  TronLink is <strong>{tron.isConnect ? "connected" : "not connected"}</strong>.
+                  {
+                    tron.isConnect
+                      ? null
+                      : (<><br />Connect to <strong>Nile testnet</strong></>)
+                  }
                 </Tooltip>
               }>
-                <div className={isTronWebConnected() ? "text-success" : "text-danger"}>TronLink</div>
+                <div className={tron.isConnect ? "text-success" : "text-danger"}>TronLink</div>
               </OverlayTrigger>
             </Nav.Link>
           </Nav>

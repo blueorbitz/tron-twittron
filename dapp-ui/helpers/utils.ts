@@ -32,7 +32,8 @@ export function walletAddress(): string {
 export function isTronWebConnected(): boolean {
   return typeof window !== "undefined"
     && window.tronWeb
-    && window.tronWeb.defaultAddress.base58;
+    && window.tronWeb.defaultAddress.base58
+    && window.tronWeb.solidityNode.host === 'https://api.nileex.io';
 }
 
 export async function setContract() {
@@ -75,7 +76,6 @@ export async function updateHandleAddress(handle: string, walletAddress: string)
   if (contractHandler == null)
     await setContract();
 
-  console.log('here', walletAddress, process.env.OWNER_PRIVATE_KEY);
   return await contractHandler?.updateHandleAddress(handle, walletAddress)
     .send({
       feeLimit: 100_000_000,

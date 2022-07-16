@@ -7,12 +7,14 @@ import axios from 'axios';
 import AppHeader from '../components/AppHeader';
 import AppNavbar from '../components/AppNavbar';
 import ColCenter from '../components/ColCenter';
-import { transferFund, walletAddress } from '../helpers/utils';
+import { transferFund } from '../helpers/utils';
+import useTronWeb from '../helpers/useTronWeb';
 import 'react-toastify/dist/ReactToastify.css'
 
 const Home: NextPage = () => {
   const { data: session } = useSession();
   const [processing, setProcessing] = useState(false);
+  const tron = useTronWeb();
 
   const onSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -37,7 +39,7 @@ const Home: NextPage = () => {
         handle, amount, txId, recieptId,
         // @ts-ignore
         sender: session.user && session.user.twitterHandle,
-        senderWallet: walletAddress(),
+        senderWallet: tron.address,
       };
 
       await axios.post('/api/transaction', param);
@@ -46,8 +48,13 @@ const Home: NextPage = () => {
 
       toast.success('transferFund successfully!');
     } catch (error: any) {
-      console.error(error.message || error.error);
-      toast.error(error.message || error.error);
+      let message: string = '';
+      typeof error === 'string'
+        ? message = error
+        : message = error.message || error.error;
+
+      console.error(error);
+      toast.error(message);
     } finally {
       setProcessing(false);
     }
@@ -79,7 +86,14 @@ const Home: NextPage = () => {
             <Form.Group className="mb-3" controlId="message">
               <Form.Check type="checkbox" label="Direct message to Twitter" disabled={processing} />
             </Form.Group>
-            <Button variant="primary" type="submit" disabled={processing}>{processing ? 'Processing Transaction…' : 'Transfer Token'}</Button>
+            {
+              tron.isConnect
+                ? <Button variant="primary" type="submit" disabled={processing}>{processing ? 'Processing Transaction…' : 'Transfer Token'}</Button>
+                : <>
+                  <Button variant="danger" type="submit" disabled>Wallet not connected</Button>
+                  <p className="text-muted">Only support Nile Testnet.</p>
+                </>
+            }
           </Form>
         </ColCenter>
       </div>
