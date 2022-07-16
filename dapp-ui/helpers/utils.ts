@@ -34,14 +34,15 @@ export function isTronWebConnected(): boolean {
   return typeof window !== "undefined"
     && window.tronWeb
     && window.tronWeb.defaultAddress.base58
-    && window.tronWeb.solidityNode.host === 'https://api.nileex.io';
+    // && window.tronWeb.solidityNode.host === 'https://api.nileex.io';
+    && window.tronWeb.solidityNode.host === 'https://api.shasta.trongrid.io';
 }
 
 export async function setContract() {
   contractHandler = await window.tronWeb.contract().at(contractAddress);
 }
 
-export async function transferFund(handle: string, amount: number): Promise<[string, any]> {
+export async function transferFund(handle: string, amount: number): Promise<string> {
   if (contractHandler == null)
     await setContract();
 
@@ -49,9 +50,24 @@ export async function transferFund(handle: string, amount: number): Promise<[str
     .send({
       feeLimit: 100_000_000,
       callValue: window.tronWeb.toSun(amount),
-      shouldPollResponse: true,
+      shouldPollResponse: false,
       keepTxID: true,
     });
+}
+
+export async function getTransactionInfo(txId: string, shouldPollResponse: boolean = false): Promise<any> {
+  return new Promise((resolve, reject) => {
+    let i = 0, response;
+    const timerId = setInterval(async () => {
+      response = await window.tronWeb.trx.getTransactionInfo(txId);
+      if (shouldPollResponse && response.id == null && i < 90) { // max poll 90 sec
+        i++;
+      } else {
+        clearInterval(timerId);
+        resolve(response);
+      }
+    }, 1000);
+  });
 }
 
 export async function releaseFund(recieptId: number, handle: string): Promise<string> {

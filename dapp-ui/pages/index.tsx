@@ -7,7 +7,7 @@ import axios from 'axios';
 import AppHeader from '../components/AppHeader';
 import AppNavbar from '../components/AppNavbar';
 import ColCenter from '../components/ColCenter';
-import { transferFund, extractErrorMessage } from '../helpers/utils';
+import { transferFund, getTransactionInfo, extractErrorMessage } from '../helpers/utils';
 import useTronWeb from '../helpers/useTronWeb';
 import 'react-toastify/dist/ReactToastify.css'
 import Link from 'next/link';
@@ -32,16 +32,19 @@ const Home: NextPage = () => {
       const amount = target.amount.value;
       const sendDm = target.message.checked;
 
-      const [txId, decoded] = await transferFund(handle, amount);
-      console.log('res:', txId, decoded);
+      const txId = await transferFund(handle, amount);
+      console.log(txId);
+      const txInfo = await getTransactionInfo(txId, true);
+      console.log(txInfo);
+      const recieptId = parseInt(txInfo?.contractResult?.at(0) ?? -1);
 
-      const recieptId = decoded.toNumber();
       const param = {
         handle, amount, txId, recieptId,
         // @ts-ignore
         sender: session.user && session.user.twitterHandle,
         senderWallet: tron.address,
       };
+      console.log('send param', param);
 
       await axios.post('/api/transaction', param);
       if (sendDm)
