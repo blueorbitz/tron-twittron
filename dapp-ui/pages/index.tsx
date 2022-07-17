@@ -7,7 +7,7 @@ import axios from 'axios';
 import AppHeader from '../components/AppHeader';
 import AppNavbar from '../components/AppNavbar';
 import ColCenter from '../components/ColCenter';
-import { transferFund, extractErrorMessage } from '../helpers/utils';
+import { transferFund, extractErrorMessage, debounce } from '../helpers/utils';
 import useTronWeb from '../helpers/useTronWeb';
 import 'react-toastify/dist/ReactToastify.css'
 import Link from 'next/link';
@@ -56,6 +56,12 @@ const Home: NextPage = () => {
     }
   };
 
+  const onChangeContractAddress = debounce(async function (e) {
+    const contractAddress = e.target.value;
+    await tron.trc20.setContractAddress(contractAddress);
+    return;
+  });
+
   return (
     <div className="container">
       <AppHeader />
@@ -75,8 +81,18 @@ const Home: NextPage = () => {
               <Form.Control type="text" placeholder="@username" disabled={processing} required />
             </Form.Group>
 
+            <Form.Group className="mb-3" controlId="trc20">
+              <Form.Label>TRC20 Contract Address</Form.Label>
+              <Form.Control type="text" placeholder="leave black to transfer TRX" disabled={processing} onChange={onChangeContractAddress} />
+              {
+                tron.trc20.error === ''
+                  ? null
+                  : <Form.Text className="text-danger">{tron.trc20.error}</Form.Text>
+              }
+            </Form.Group>
+
             <Form.Group className="mb-3" controlId="amount">
-              <Form.Label>Amount (in Trx)</Form.Label>
+              <Form.Label>Amount in {tron.trc20.symbol || 'TRX'}</Form.Label>
               <Form.Control type="number" disabled={processing} required />
             </Form.Group>
 

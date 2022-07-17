@@ -139,3 +139,12 @@ export function extractErrorMessage(error) {
     : message = error.message || error.error;
   return message;
 }
+
+export function debounce(func, timeout = 1000){
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    // @ts-ignore
+    timer = setTimeout(() => { func.apply(this, args); }, timeout);
+  };
+}
