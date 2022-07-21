@@ -83,7 +83,7 @@ const Home: NextPage = () => {
       <div className="row py-3">
         <ColCenter>
           <h4>Transfer Trx token to a Twitter handle.</h4>
-          <p>If you're new here. Please setup your <Link href="https://www.tronlink.org">TronLink</Link> for the browser extension.</p>
+          <p>If you&apos;re new here. Please setup your <Link href="https://www.tronlink.org">TronLink</Link> for the browser extension.</p>
           <p>Your token transfer is safe with us. Token transfer will be stored in the smart-contract vault if the user has not registered their wallet with us.</p>
         </ColCenter>
 

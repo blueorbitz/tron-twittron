@@ -31,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                 recipient_id: recipientId,
               },
               message_data: {
-                text: `I have send you ${body.amount}TRX.\nGo to ${process.env.NEXTAUTH_URL} to connnect your wallet and redeem it.`
+                text: `I have send you ${body.amount} ${body.symbol}.\nGo to ${process.env.NEXTAUTH_URL} to connnect your wallet and redeem it.`
               },
             },
           }
