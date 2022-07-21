@@ -86,7 +86,7 @@ const Transfer: NextPage = () => {
                               <span>&nbsp;</span>
                             </React.Fragment>
                           }
-                          {`${tx.amount} TRX to `}
+                          {`${tx.amount} ${tx.symbol} to `}
                           <a href={`https://twitter.com/${tx.handle}`} rel="noreferrer" target="_blank">
                             <strong><i>{tx.handle}</i></strong>
                             {

@@ -7,7 +7,8 @@ declare global {
   }
 
   interface TwittronContract {
-    transferFund(handle: string): any;
+    transferTrx(handle: string): any;
+    transferTrc20(handle: string, contractAddress: string, amount: number): any;
     receiptList10(handle: string, startIndex: number): any;
     releaseFund(id: number, handle: string): any;
     handleAddress(handle: string): any;
@@ -42,14 +43,34 @@ export async function setContract() {
   contractHandler = await window.tronWeb.contract().at(contractAddress);
 }
 
-export async function transferFund(handle: string, amount: number): Promise<string> {
+export async function transferTrx(handle: string, amount: number): Promise<string> {
   if (contractHandler == null)
     await setContract();
 
-  return await contractHandler?.transferFund(handle)
+  return await contractHandler?.transferTrx(handle)
     .send({
-      feeLimit: 100_000_000,
+      feeLimit: 500_000_000,
       callValue: window.tronWeb.toSun(amount),
+      shouldPollResponse: false,
+      keepTxID: true,
+    });
+}
+
+export async function approveTrc20(trc20ContractAddress: string, amount: number): Promise<any> {
+  const contract = await window.tronWeb.contract().at(trc20ContractAddress);
+
+  return await contract.approve(contractAddress, amount)
+    .send({ feeLimit: 100_000_000 });
+}
+
+export async function transferTrc20(handle: string, trc20ContractAddress: string, amount: number): Promise<string> {
+  if (contractHandler == null)
+    await setContract();
+
+  return await contractHandler?.transferTrc20(handle, trc20ContractAddress, amount)
+    .send({
+      feeLimit: 500_000_000,
+      callValue: 0,
       shouldPollResponse: false,
       keepTxID: true,
     });
@@ -138,4 +159,13 @@ export function extractErrorMessage(error) {
     ? message = error
     : message = error.message || error.error;
   return message;
+}
+
+export function debounce(func, timeout = 1000){
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    // @ts-ignore
+    timer = setTimeout(() => { func.apply(this, args); }, timeout);
+  };
 }

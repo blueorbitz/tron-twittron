@@ -1,14 +1,22 @@
 import { useState, useEffect } from 'react';
-import { isTronWebConnected, walletAddress } from './utils';
+import { isTronWebConnected, walletAddress, extractErrorMessage } from './utils';
 
 interface TronWebHookResponse {
   isConnect: boolean;
   address: string;
+  trc20: any;
 }
 
 export default function useTronWeb(): TronWebHookResponse {
   const [isConnect, setIsConnect] = useState(isTronWebConnected());
   const [address, setAddress] = useState(walletAddress());
+  
+  // trc20
+  const [trc20Address, setTrc20Address] = useState('');
+  const [trc20Name, setTrc20Name] = useState('');
+  const [trc20Symbol, setTrc20Symbol] = useState('');
+  const [trc20Decimals, setTrc20Decimals] = useState(0);
+  const [trc20Error, setTrc20Error] = useState('');
 
   const tronLinkEventListener = (e: MessageEvent) => {
     switch (e.data.message && e.data.message.action) {
@@ -38,5 +46,46 @@ export default function useTronWeb(): TronWebHookResponse {
     }
   }, []);
 
-  return { isConnect, address };
+  async function trc20Call(trc20ContractAddress: string, methodName: string) {
+    try {
+      const contract = await globalThis.tronWeb.contract().at(trc20ContractAddress);
+      const result = await contract[methodName]().call();
+      console.log('trc20Call', result);
+    } catch(error) {
+      console.error('trc20Call error:', error);
+    }
+  }
+
+  async function trc20ContractAddress(trc20ContractAddress: string) {
+    try {
+      const contract = await globalThis.tronWeb.contract().at(trc20ContractAddress);
+      setTrc20Error('');
+      setTrc20Name(await contract.name().call());
+      setTrc20Symbol(await contract.symbol().call());
+      setTrc20Decimals(parseInt(await contract.decimals().call()));
+      setTrc20Address(trc20ContractAddress);
+      return true;
+    } catch(error) {
+      console.log(error);
+      setTrc20Error(extractErrorMessage(error));
+      setTrc20Name('');
+      setTrc20Symbol('');
+      setTrc20Decimals(0);
+      setTrc20Address('');
+      return false;
+    }
+  }
+
+  return {
+    isConnect,
+    address,
+    trc20: {
+      setContractAddress: trc20ContractAddress,
+      address: trc20Address,
+      name: trc20Name,
+      symbol: trc20Symbol,
+      decimals: trc20Decimals,
+      error: trc20Error,
+    },
+  };
 }

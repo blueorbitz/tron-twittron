@@ -4,6 +4,7 @@ export interface TransactionRecord {
   recieptId: number;
   handle: string;
   amount: number;
+  symbol: string;
   sender: string;
   senderWallet: string;
   claimWallet?: string;

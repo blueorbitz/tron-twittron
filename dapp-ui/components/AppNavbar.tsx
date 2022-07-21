@@ -45,7 +45,7 @@ export default function AppHeader() {
                   }
                 </Tooltip>
               }>
-                <div className={tron.isConnect ? "text-success" : "text-danger"}>TronLink</div>
+                <span className={tron.isConnect ? "text-success" : "text-danger"}>TronLink</span>
               </OverlayTrigger>
             </Nav.Link>
           </Nav>
