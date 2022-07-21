@@ -168,7 +168,7 @@ const Received: NextPage = () => {
                     <div className="d-flex gap-2 w-100 justify-content-between">
                       <div>
                         <h6 className="mb-0">
-                          {`Received ${tx.amount} TRX from `}
+                          {`Received ${tx.amount} ${tx.symbol} from `}
                           <a href={`https://twitter.com/${tx.sender}`} rel="noreferrer" target="_blank">
                             <strong><i>{tx.sender}</i></strong>
                             {

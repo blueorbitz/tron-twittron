@@ -7,7 +7,7 @@ import axios from 'axios';
 import AppHeader from '../components/AppHeader';
 import AppNavbar from '../components/AppNavbar';
 import ColCenter from '../components/ColCenter';
-import { transferFund, extractErrorMessage, debounce } from '../helpers/utils';
+import { transferTrx, approveTrc20, transferTrc20, extractErrorMessage, debounce } from '../helpers/utils';
 import useTronWeb from '../helpers/useTronWeb';
 import 'react-toastify/dist/ReactToastify.css'
 import Link from 'next/link';
@@ -17,6 +17,7 @@ const solidityNode: string = process.env.SOLIDITY_NODE || '';
 const Home: NextPage = () => {
   const { data: session } = useSession();
   const [processing, setProcessing] = useState(false);
+  const [contractAddress, setContractAddress] = useState('');
   const tron = useTronWeb();
 
   const onSubmit = async (e: React.SyntheticEvent) => {
@@ -34,20 +35,33 @@ const Home: NextPage = () => {
       const amount = target.amount.value;
       const sendDm = target.message.checked;
 
-      const txId = await transferFund(handle, amount);
+      console.log('Is Trc20?:', tron.trc20.address);
+
+      let txId;
+      if (tron.trc20.address === '') {
+        txId = await transferTrx(handle, amount);
+      }
+      else {
+        const _amount = amount * Math.pow(10, tron.trc20.decimals);
+        await approveTrc20(tron.trc20.address, _amount);
+        txId = await transferTrc20(handle, tron.trc20.address, _amount);
+      }
 
       const param = {
         handle, amount, txId, recieptId: -1,
+        symbol: tron.trc20.symbol || 'TRX',
         // @ts-ignore
         sender: session.user && session.user.twitterHandle,
         senderWallet: tron.address,
       };
 
+      console.log(param);
+
       await axios.post('/api/transaction', param);
       if (sendDm)
         await axios.post('/api/twitter', param);
 
-      toast.success('transferFund successfully!');
+      toast.success('transferTrx successfully!');
     } catch (error: any) {
       console.error(error);
       toast.error(extractErrorMessage(error));
@@ -57,9 +71,9 @@ const Home: NextPage = () => {
   };
 
   const onChangeContractAddress = debounce(async function (e) {
-    const contractAddress = e.target.value;
-    await tron.trc20.setContractAddress(contractAddress);
-    return;
+    const address = e.target.value;
+    await tron.trc20.setContractAddress(address);
+    setContractAddress(address);
   });
 
   return (
@@ -85,7 +99,7 @@ const Home: NextPage = () => {
               <Form.Label>TRC20 Contract Address</Form.Label>
               <Form.Control type="text" placeholder="leave black to transfer TRX" disabled={processing} onChange={onChangeContractAddress} />
               {
-                tron.trc20.error === ''
+                tron.trc20.error === '' || contractAddress === ''
                   ? null
                   : <Form.Text className="text-danger">{tron.trc20.error}</Form.Text>
               }

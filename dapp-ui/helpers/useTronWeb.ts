@@ -15,6 +15,7 @@ export default function useTronWeb(): TronWebHookResponse {
   const [trc20Address, setTrc20Address] = useState('');
   const [trc20Name, setTrc20Name] = useState('');
   const [trc20Symbol, setTrc20Symbol] = useState('');
+  const [trc20Decimals, setTrc20Decimals] = useState(0);
   const [trc20Error, setTrc20Error] = useState('');
 
   const tronLinkEventListener = (e: MessageEvent) => {
@@ -61,6 +62,7 @@ export default function useTronWeb(): TronWebHookResponse {
       setTrc20Error('');
       setTrc20Name(await contract.name().call());
       setTrc20Symbol(await contract.symbol().call());
+      setTrc20Decimals(parseInt(await contract.decimals().call()));
       setTrc20Address(trc20ContractAddress);
       return true;
     } catch(error) {
@@ -68,6 +70,7 @@ export default function useTronWeb(): TronWebHookResponse {
       setTrc20Error(extractErrorMessage(error));
       setTrc20Name('');
       setTrc20Symbol('');
+      setTrc20Decimals(0);
       setTrc20Address('');
       return false;
     }
@@ -81,6 +84,7 @@ export default function useTronWeb(): TronWebHookResponse {
       address: trc20Address,
       name: trc20Name,
       symbol: trc20Symbol,
+      decimals: trc20Decimals,
       error: trc20Error,
     },
   };
