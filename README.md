@@ -6,3 +6,7 @@
 
 ## Dapp-ui
 - Follow the README instruction in the `dapp-ui`.
+
+## Demo
+- [Youtube Presentation and Demo](https://youtu.be/sFYp8qaC35k)
+- [Demo application](https://tron-twittron.herokuapp.com/)
